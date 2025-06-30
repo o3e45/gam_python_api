@@ -1,34 +1,34 @@
 # GAM Command API
 
-This Python script exposes a **REST API** using **Flask** to run **GAM (Google Apps Manager)** commands via HTTP requests. You can use this API to automate Google Workspace management tasks like listing users, modifying domains, or generating reports.
+This Python script exposes a **REST API** using **Flask** to run **GAM (Google Apps Manager)** commands via HTTP requests. The API accepts **POST** requests, where you send **GAM command arguments** in the body of the request. The script then executes the GAM command and returns the result in JSON format.
 
 ## Features
 - **Run GAM commands via HTTP**: Allows interaction with Google Workspace data through API requests.
-- **Command Execution**: Execute any GAM command by sending it as a query parameter to the API endpoint.
+- **Command Execution**: Execute any **GAM** command by sending it as a JSON payload in the body of a **POST** request.
 - **Customizable Port**: The Flask app runs on port **8000** by default, which can be changed.
-- **Easy Integration**: Can be integrated into other systems or workflows to automate Google Workspace management.
+- **Error Handling**: The script provides meaningful error messages if the command fails or if no command is provided.
 
 ## Prerequisites
-1. Python 3.6+ installed on your system.
-2. **GAM** installed and configured properly (with the necessary permissions).
+1. **Python 3.6+** installed on your system.
+2. **GAM** installed and configured properly (with necessary permissions).
 3. **Flask** and **subprocess** for running commands and exposing the API.
 
 ## Installation
 
 1. **Clone the repository**:
     ```bash
-    git clone https://your-repository-url.git
-    cd gam-command-api
+    git clone https://github.com/yourusername/yourrepository.git gam_python_api
+    cd gam_python_api
     ```
 
 2. **Install dependencies**:
-    Ensure that **Flask** is installed:
+    Make sure **Flask** is installed:
     ```bash
-    pip install flask
+    pip install -r requirements.txt
     ```
 
 3. **Ensure GAM is installed**:
-    Make sure you have GAM installed and configured on your system, as the script runs GAM commands through it.
+    Follow the [GAM installation instructions](https://github.com/GAM-team/GAM/wiki) for installing GAM and make sure the **GAM** executable is located at `/root/bin/gam7/gam` (or update the path in the script accordingly).
 
 ## Usage
 
@@ -41,36 +41,40 @@ This Python script exposes a **REST API** using **Flask** to run **GAM (Google A
     By default, the server will be available at `http://127.0.0.1:8000`.
 
 2. **Run a GAM Command**:
-    You can now interact with the API by sending **GET** requests with the GAM command as a query parameter.
+    You can interact with the API by sending **POST** requests with the **GAM command** in the body as JSON.
 
-    For example, to list all users:
+    Example request:
     ```bash
-    curl "http://127.0.0.1:8000/gam?command=gam+print+users"
+    curl -X POST http://127.0.0.1:8000/gam \
+         -H "Content-Type: application/json" \
+         -d '{"command": "print users"}'
     ```
 
-    **Response**:
+    Example response:
     ```json
     {
-        "command": "gam print users",
-        "output": "primaryEmail\ndonovan_vincent@owendobson.com\nowen@owendobson.com\n"
+      "command": "print users",
+      "output": "primaryEmail\ndonovan_vincent@owendobson.com\nowen@owendobson.com\n"
     }
     ```
 
-3. **Customize Port**:
-    If you want to run the API on a different port, you can modify the `app.run(debug=True, port=8000)` line in the Python script.
+3. **Change Port**:
+    If you want to run the API on a different port, modify the `app.run(debug=True, port=8000)` line in the Python script.
 
 ## Example Endpoints
 
-- **GET /gam**: Executes a GAM command and returns the output.
+- **POST /gam**: Executes a GAM command and returns the output.
   - Example request:
-    ```
-    curl "http://127.0.0.1:8000/gam?command=gam+print+users"
+    ```bash
+    curl -X POST http://127.0.0.1:8000/gam \
+         -H "Content-Type: application/json" \
+         -d '{"command": "print users"}'
     ```
   - Example response:
     ```json
     {
-        "command": "gam print users",
-        "output": "primaryEmail\ndonovan_vincent@owendobson.com\nowen@owendobson.com\n"
+      "command": "print users",
+      "output": "primaryEmail\ndonovan_vincent@owendobson.com\nowen@owendobson.com\n"
     }
     ```
 
@@ -101,3 +105,15 @@ def create_user():
     command = f"gam create user {email} firstname {firstname} lastname {lastname} password {password}"
     output = run_gam_command(command)
     return jsonify({"output": output})
+
+
+
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+### Key Updates:
+- **POST Method**: The API now expects **POST** requests with the **GAM command** passed in the request body as JSON.
+- **Error Handling**: Provides proper error handling for missing commands or invalid execution.
+- **Security Considerations**: A reminder to implement authentication and input validation in a production environment.
+
+Let me know if you need any more changes!

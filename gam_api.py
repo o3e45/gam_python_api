@@ -7,11 +7,12 @@ app = Flask(__name__)
 def run_gam_command(command):
     """Runs a GAM command using subprocess and returns the output."""
     try:
-        # Full path to GAM
-        gam_path = "/root/bin/gam7/gam"  # Change this to the correct GAM path
-        # Run the GAM command
-        result = subprocess.run(f"{gam_path} {command}", shell=True, capture_output=True, text=True)
-        
+        # Full path to GAM executable
+        gam_path = "/root/bin/gam7/gam"  # Ensure this is correct
+
+        # Ensure proper argument handling
+        result = subprocess.run([gam_path] + command.split(), capture_output=True, text=True)
+
         # Check if the command was successful
         if result.returncode == 0:
             return result.stdout
@@ -36,5 +37,5 @@ def gam():
     return jsonify({"command": gam_command, "output": output})
 
 if __name__ == '__main__':
-    # Ensure the server runs on 0.0.0.0 (can be accessed externally) and port 8000
+    # Ensure the server runs on all addresses (can be accessed externally) and port 8000
     app.run(host='0.0.0.0', port=8000, debug=True)

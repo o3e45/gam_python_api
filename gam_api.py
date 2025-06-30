@@ -8,7 +8,7 @@ def run_gam_command(command):
     """Runs a GAM command using subprocess and returns the output."""
     try:
         # Full path to GAM executable
-        gam_path = "/root/bin/gam7/gam"  # Ensure this is correct
+        gam_path = "/root/bin/gam7/gam"  # Update this path to where your GAM executable is located
         
         # Prepare the command by appending the 'gam' executable
         result = subprocess.run([gam_path] + command.split(), capture_output=True, text=True)
@@ -25,17 +25,21 @@ def run_gam_command(command):
 def gam():
     """Exposes the GAM command as an API endpoint."""
     # Get the GAM command from the request body (raw command arguments)
-    data = request.get_json()
-    gam_command = data.get('command')
+    try:
+        data = request.get_json()  # Parse the JSON body of the request
+        gam_command = data.get('command')
 
-    if not gam_command:
-        return jsonify({"error": "No command provided"}), 400
+        if not gam_command:
+            return jsonify({"error": "No command provided"}), 400
 
-    # Run the command and get the output
-    output = run_gam_command(gam_command)
-    
-    # Return the output as a JSON response
-    return jsonify({"command": gam_command, "output": output})
+        # Run the command and get the output
+        output = run_gam_command(gam_command)
+
+        # Return the output as a JSON response
+        return jsonify({"command": gam_command, "output": output})
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # Ensure the server runs on all addresses (can be accessed externally) and port 8000

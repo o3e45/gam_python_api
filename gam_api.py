@@ -1,13 +1,16 @@
 from flask import Flask, jsonify, request
 import subprocess
+import os
 
 app = Flask(__name__)
 
 def run_gam_command(command):
     """Runs a GAM command using subprocess and returns the output."""
     try:
+        # Full path to GAM
+        gam_path = "/root/bin/gam7/gam"  # Change this to the correct GAM path
         # Run the GAM command
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        result = subprocess.run(f"{gam_path} {command}", shell=True, capture_output=True, text=True)
         
         # Check if the command was successful
         if result.returncode == 0:
@@ -15,7 +18,7 @@ def run_gam_command(command):
         else:
             return f"Error: {result.stderr}"
     except Exception as e:
-        return str(e)
+        return f"An error occurred: {str(e)}"
 
 @app.route('/gam', methods=['GET'])
 def gam():
@@ -29,9 +32,9 @@ def gam():
     # Run the command and get the output
     output = run_gam_command(gam_command)
     
-    # Return the output
+    # Return the output as a JSON response
     return jsonify({"command": gam_command, "output": output})
 
 if __name__ == '__main__':
-    # Run the Flask app on port 8000
-    app.run(debug=True, port=8000)
+    # Ensure the server runs on 0.0.0.0 (can be accessed externally) and port 8000
+    app.run(host='0.0.0.0', port=8000, debug=True)

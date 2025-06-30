@@ -9,8 +9,8 @@ def run_gam_command(command):
     try:
         # Full path to GAM executable
         gam_path = "/root/bin/gam7/gam"  # Ensure this is correct
-
-        # Ensure proper argument handling
+        
+        # Prepare the command by appending the 'gam' executable
         result = subprocess.run([gam_path] + command.split(), capture_output=True, text=True)
 
         # Check if the command was successful
@@ -21,11 +21,12 @@ def run_gam_command(command):
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
-@app.route('/gam', methods=['GET'])
+@app.route('/gam', methods=['POST'])
 def gam():
     """Exposes the GAM command as an API endpoint."""
-    # Get the GAM command from the query string
-    gam_command = request.args.get('command')
+    # Get the GAM command from the request body (raw command arguments)
+    data = request.get_json()
+    gam_command = data.get('command')
 
     if not gam_command:
         return jsonify({"error": "No command provided"}), 400
